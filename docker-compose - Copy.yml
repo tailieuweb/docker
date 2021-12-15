@@ -17,7 +17,7 @@ services:
         networks:
             - web-network
         volumes:
-            - F:/5-lampart/:/home/sites
+            - ./public_html/:/home/sites
     #HTTPD
     web-httpd:
         container_name: c-httpd-web
@@ -27,7 +27,7 @@ services:
         networks:
             - web-network
         volumes:
-            - F:/5-lampart/:/home/sites/
+            - ./public_html/:/home/sites/
             - ./httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf
         ports:
             - "70:80"
@@ -40,7 +40,7 @@ services:
         networks:
             - web-network
         ports:
-            - "3309:3306"
+            - "3306:3306"
         volumes:
             - ./mysql/db:/var/lib/mysql
             - ./mysql/my.cnf:/etc/mysql/my.cnf
