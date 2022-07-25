@@ -17,7 +17,7 @@ services:
         networks:
             - web-network
         volumes:
-            - F:/5-lampart/:/home/sites
+            - D:/6-docker/docker_dev/public_html/src1/:/home/sites
     #HTTPD
     web-httpd:
         container_name: c-httpd-web
@@ -27,7 +27,7 @@ services:
         networks:
             - web-network
         volumes:
-            - F:/5-lampart/:/home/sites/
+            - D:/6-docker/docker_dev/public_html/src1/:/home/sites/
             - ./httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf
         ports:
             - "70:80"
@@ -45,17 +45,17 @@ services:
             - ./mysql/db:/var/lib/mysql
             - ./mysql/my.cnf:/etc/mysql/my.cnf
         environment:
-            - MYSQL_ROOT_PASSWORD=web
-            - MYSQL_DATABASE=web
-            - MYSQL_USER=web
-            - MYSQL_PASSWORD=web
-            - MYSQL_ALLOW_EMPTY_PASSWORD=1
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
     #phpMyAdmin
     phpmyadmin:
         image: phpmyadmin
         restart: always    
         ports:
-            - "9090:80"
+            - "7070:80"
         networks:
             - web-network
         environment:

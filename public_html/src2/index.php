@@ -1,3 +1,3 @@
-<h1>src1</h1>
+<h1>src2</h1>
 <?php
 echo phpinfo();

@@ -8,3 +8,6 @@
 ## phpmyadmin info
 * localhost:9090
 * username: root, password: web, server: h-mysql-web
+
+
+https://github.com/dyarleniber/docker-php
