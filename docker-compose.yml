@@ -1,44 +1,41 @@
-version: "3"
-
-#network
-networks:
-    web-network:
-        driver: bridge
-
+#docker-compose.yml
+version: "3.8"
 services:
     #PHP
     web-php:
-        container_name: c-php-web
-        build:
-            dockerfile: Dockerfile
-            context: ./php/
-        hostname: h-php-web
-        restart: always
-        networks:
-            - web-network
-        volumes:
-            - D:/6-docker/docker_dev/public_html/src1/:/home/sites
-    #HTTPD
-    web-httpd:
-        container_name: c-httpd-web
-        image: "httpd:2.4.43"
-        hostname: h-httpd-web
-        restart: always
-        networks:
-            - web-network
-        volumes:
-            - D:/6-docker/docker_dev/public_html/src1/:/home/sites/
-            - ./httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf
+        container_name: c-web-php
+        build: ./php/
         ports:
-            - "70:80"
+            - "9000:9000"
+        volumes:
+            - D:/5-research/1-gh/1-tailieuweb/laravel-8x/:/home/sites
+        working_dir: /home/sites
+    #Composer
+    web-composer:
+        container_name: c-web-composer
+        image: composer/composer
+        volumes:
+            - D:/5-research/1-gh/1-tailieuweb/laravel-8x:/home/sites
+        working_dir: /home/sites
+        command: install
+    #Apache
+    web-apache:
+        container_name: c-web-apache
+        build: ./apache
+        links:
+            - web-php
+        ports:
+            - "80:80"
+        volumes:
+            - D:/5-research/1-gh/1-tailieuweb/laravel-8x:/home/sites
+            - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+            - ./apache/logs:/var/log/apache2
     #MySQL
     web-mysql:
-        container_name: c-mysql-web
+        container_name: c-web-mysql
         image: "mysql:5.6.40"
-        hostname: h-mysql-web
+        hostname: h-web-mysql
         restart: always
-        networks:
-            - web-network
         ports:
             - "3309:3306"
         volumes:
@@ -56,7 +53,5 @@ services:
         restart: always    
         ports:
             - "7070:80"
-        networks:
-            - web-network
         environment:
             - PMA_ARBITRARY=1

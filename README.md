@@ -20,3 +20,6 @@ docker-compose logs nginx
 docker-compose pause
 docker-compose unpause
 docker-compose down
+
+
+https://devops.tutorials24x7.com/blog/containerize-laravel-with-apache-mysql-and-mongodb-using-docker-containers
