@@ -33,13 +33,10 @@ services:
     web-mysql:
         container_name: c-web-mysql
         image: "mysql:5.6.40"
-        hostname: h-web-mysql
-        restart: always
         ports:
             - "3309:3306"
         volumes:
             - ./mysql/db:/var/lib/mysql
-            - ./mysql/my.cnf:/etc/mysql/my.cnf
         environment:
             MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
             MYSQL_DATABASE: ${DB_DATABASE}
@@ -47,10 +44,15 @@ services:
             MYSQL_PASSWORD: ${DB_PASSWORD}
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
     #phpMyAdmin
-    phpmyadmin:
-        image: phpmyadmin
-        restart: always    
+    web-phpmyadmin:
+        container_name: c-web-phpmyadmin
+        image: phpmyadmin/phpmyadmin
+        links:
+            - web-mysql
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+            PMA_ARBITRARY: 1
+        restart: always
         ports:
             - "7070:80"
-        environment:
-            - PMA_ARBITRARY=1

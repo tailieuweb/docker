@@ -5,6 +5,5 @@ RUN apt-get install -y openssl zip unzip git curl
 RUN apt-get install -y libzip-dev libonig-dev libicu-dev
 RUN apt-get install -y autoconf pkg-config libssl-dev
 
-RUN docker-php-ext-install mysqli
-RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install pdo pdo_mysql mysqli
 RUN docker-php-ext-install mbstring
