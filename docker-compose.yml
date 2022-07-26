@@ -4,11 +4,11 @@ services:
     #PHP
     web-php:
         container_name: c-web-php
-        build: ./php/
+        build: ./php
         ports:
             - "9000:9000"
         volumes:
-            - D:/5-research/1-gh/1-tailieuweb/laravel-8x/:/home/sites
+            - D:/5-research/1-gh/1-tailieuweb/laravel-8x:/home/sites
         working_dir: /home/sites
     #Composer
     web-composer:
@@ -25,10 +25,9 @@ services:
         links:
             - web-php
         ports:
-            - "80:80"
+            - "8000:80"
         volumes:
             - D:/5-research/1-gh/1-tailieuweb/laravel-8x:/home/sites
-            - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
             - ./apache/logs:/var/log/apache2
     #MySQL
     web-mysql:
