@@ -11,3 +11,12 @@
 
 
 https://github.com/dyarleniber/docker-php
+
+docker-compose build app
+docker-compose up -d
+docker-compose ps
+docker-compose exec app ls -l
+docker-compose logs nginx
+docker-compose pause
+docker-compose unpause
+docker-compose down
