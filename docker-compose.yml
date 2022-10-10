@@ -45,14 +45,9 @@ services:
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
     #phpMyAdmin
     web-phpmyadmin:
-        container_name: c-web-phpmyadmin
-        image: phpmyadmin/phpmyadmin
-        links:
-            - web-mysql
-        environment:
-            PMA_HOST: mysql
-            PMA_PORT: 3306
-            PMA_ARBITRARY: 1
-        restart: always
+        image: phpmyadmin
+        restart: always    
         ports:
             - "7070:80"
+        environment:
+            - PMA_ARBITRARY=1
