@@ -17,7 +17,7 @@ services:
         networks:
             - web-network
         volumes:
-            - F:/5-lampart/:/home/sites
+            - D:/1-github-workspace/1-tailieuweb/7-wordpress/:/home/sites
     #HTTPD
     web-httpd:
         container_name: c-httpd-web
@@ -27,7 +27,7 @@ services:
         networks:
             - web-network
         volumes:
-            - F:/5-lampart/:/home/sites/
+            - D:/1-github-workspace/1-tailieuweb/7-wordpress/:/5-lampart/:/home/sites
             - ./httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf
         ports:
             - "70:80"
@@ -53,7 +53,7 @@ services:
     #phpMyAdmin
     phpmyadmin:
         image: phpmyadmin
-        restart: always    
+        restart: always
         ports:
             - "9090:80"
         networks:
