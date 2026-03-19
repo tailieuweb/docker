@@ -1,20 +1,48 @@
-FROM php:8-fpm
-# Install modules
-RUN buildDeps="libpq-dev libzip-dev libicu-dev libpng-dev libjpeg62-turbo-dev libfreetype6-dev libmagickwand-6.q16-dev libxslt-dev" && \
-    apt-get update && \
-    apt-get install -y $buildDeps --no-install-recommends && \
-    ln -s /usr/lib/x86_64-linux-gnu/ImageMagick-6.8.9/bin-Q16/MagickWand-config /usr/bin && \
-    pecl install imagick && \
-    echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    docker-php-ext-install \
+FROM php:8.3.21-apache
+
+ENV COMPOSER_VERSION=2.8.9
+ENV TZ Asia/Tokyo
+ENV APACHE_DOCUMENT_ROOT /var/www/html
+
+RUN apt-get update \
+    && apt-get install -y \
+        curl \
+        zip \
+        unzip \
+        git \
+        supervisor \
+        libpng-dev \
+        libzip-dev \
+        libicu-dev \
+        libxml2-dev \
+        libonig-dev \
+        tzdata \
+    && docker-php-ext-install \
+        mysqli \
+        pdo_mysql \
+        intl \
+        xml \
+        gd \
+        zip \
         opcache \
-        pdo \
-        pdo_pgsql \
-        pgsql \
-        sockets \
-        xsl \
-        sysvsem \
-        intl
-CMD ["php-fpm"]
+        bcmath \
+        sockets
+
+# Xdebug (optional)
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
+# Apache config
+RUN a2enmod rewrite
+
+# Set document root (Moodle KHÔNG dùng /public)
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+
+# Composer
+RUN curl -sS https://getcomposer.org/installer | php -- \
+    --install-dir=/usr/local/bin \
+    --filename=composer \
+    --version=$COMPOSER_VERSION
+
+# User
+RUN useradd -ms /bin/bash -u 1000 app

@@ -1,5 +1,3 @@
-version: "3"
-
 #network
 networks:
     web-network:
@@ -16,47 +14,40 @@ services:
         restart: always
         networks:
             - web-network
-        volumes:
-            - D:/1-github-workspace/1-tailieuweb/7-wordpress/:/home/sites
-    #HTTPD
-    web-httpd:
-        container_name: c-httpd-web
-        image: "httpd:2.4.43"
-        hostname: h-httpd-web
-        restart: always
-        networks:
-            - web-network
-        volumes:
-            - D:/1-github-workspace/1-tailieuweb/7-wordpress/:/5-lampart/:/home/sites
-            - ./httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf
         ports:
-            - "70:80"
+            - "8080:80"
+        volumes:
+            - ./prj/moodle:/var/www/html
     #MySQL
     web-mysql:
         container_name: c-mysql-web
-        image: "mysql:5.6.40"
-        hostname: h-mysql-web
+        build:
+            context: ./mysql
         restart: always
         networks:
-            - web-network
+            web-network:
+                aliases:
+                    - web-mysql
         ports:
-            - "3309:3306"
+            - "3306:3306"
         volumes:
             - ./mysql/db:/var/lib/mysql
-            - ./mysql/my.cnf:/etc/mysql/my.cnf
+            - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf        
         environment:
-            - MYSQL_ROOT_PASSWORD=web
-            - MYSQL_DATABASE=web
-            - MYSQL_USER=web
-            - MYSQL_PASSWORD=web
-            - MYSQL_ALLOW_EMPTY_PASSWORD=1
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     #phpMyAdmin
     phpmyadmin:
         image: phpmyadmin
         restart: always
         ports:
-            - "9090:80"
+            - "8081:80"
         networks:
             - web-network
+        depends_on:
+            - web-mysql
         environment:
-            - PMA_ARBITRARY=1
+            - PMA_HOST=web-mysql
+            - PMA_PORT=3306
