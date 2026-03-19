@@ -18,6 +18,7 @@ RUN apt-get update \
         libonig-dev \
         libcurl4-openssl-dev \
         tzdata \
+        libsodium-dev \
     && docker-php-ext-install \
         mysqli \
         pdo_mysql \
@@ -32,15 +33,19 @@ RUN apt-get update \
         exif \
         pcntl \
         soap \
+        sodium \
     && docker-php-ext-enable opcache
 
-RUN echo "zend.exception_ignore_args = On" >> /usr/local/etc/php/php.ini
-RUN echo "display_errors = Off" >> /usr/local/etc/php/php.ini \
-    && echo "log_errors = On" >> /usr/local/etc/php/php.ini \
-    && echo "memory_limit = 512M" >> /usr/local/etc/php/php.ini \
-    && echo "max_execution_time = 300" >> /usr/local/etc/php/php.ini
-
-RUN echo "max_input_vars = 5000" >> /usr/local/etc/php/php.ini
+RUN { \
+        echo 'zend.exception_ignore_args = On'; \
+        echo 'display_errors = Off'; \
+        echo 'log_errors = On'; \
+        echo 'memory_limit = 512M'; \
+        echo 'max_execution_time = 300'; \
+        echo 'max_input_vars = 5000'; \
+        echo 'upload_max_filesize = 100M'; \
+        echo 'post_max_size = 100M'; \
+    } > /usr/local/etc/php/conf.d/moodle-custom.ini
 
 # Xdebug (optional)
 RUN pecl install xdebug \
@@ -48,9 +53,8 @@ RUN pecl install xdebug \
 
 # Apache config
 RUN a2enmod rewrite
-
-# Set document root (Moodle KHÔNG dùng /public)
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | php -- \

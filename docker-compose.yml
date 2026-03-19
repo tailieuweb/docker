@@ -1,52 +1,55 @@
-#network
+version: '3'
 networks:
-    web-network:
-        driver: bridge
+  web-network:
+    driver: bridge
 
 services:
     #PHP
     web-php:
-        container_name: c-php-web
-        build:
-            dockerfile: Dockerfile
-            context: ./php/
-        hostname: h-php-web
-        restart: always
+        container_name: web-php
+        build: ./php            
+        working_dir: /var/www/html
         networks:
             - web-network
+        environment:
+            APP_ENV: local
+            PHP_IDE_CONFIG: serverName=moodle
         ports:
             - "8080:80"
         volumes:
             - ./prj/moodle:/var/www/html
             - ./prj/moodledata:/var/moodledata
+            - ./php/httpd_security.conf:/etc/apache2/conf-available/security.conf
+            - ./php/php.ini:/usr/local/etc/php/php.ini
+        depends_on:
+            - web-mysql
+        restart: always
     #MySQL
     web-mysql:
-        container_name: c-mysql-web
-        build:
-            context: ./mysql
-        restart: always
+        container_name: web-mysql
+        build: ./mysql               
+        ports:
+            - "3306:3306"
         networks:
             web-network:
                 aliases:
                     - web-mysql
-        ports:
-            - "3306:3306"
         volumes:
             - ./mysql/db:/var/lib/mysql
-        #    - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf        
         environment:
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
             - MYSQL_DATABASE=${MYSQL_DATABASE}
             - MYSQL_USER=${MYSQL_USER}
             - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        restart: always
     #phpMyAdmin
     phpmyadmin:
         image: phpmyadmin
         restart: always
-        ports:
-            - "8081:80"
         networks:
             - web-network
+        ports:
+            - "8081:80"
         depends_on:
             - web-mysql
         environment:
