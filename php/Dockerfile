@@ -2,7 +2,7 @@ FROM php:8.3.21-apache
 
 ENV COMPOSER_VERSION=2.8.9
 ENV TZ Asia/Tokyo
-ENV APACHE_DOCUMENT_ROOT /var/www/html
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
 RUN apt-get update \
     && apt-get install -y \
@@ -16,6 +16,7 @@ RUN apt-get update \
         libicu-dev \
         libxml2-dev \
         libonig-dev \
+        libcurl4-openssl-dev \
         tzdata \
     && docker-php-ext-install \
         mysqli \
@@ -26,7 +27,20 @@ RUN apt-get update \
         zip \
         opcache \
         bcmath \
-        sockets
+        sockets \
+        mbstring \
+        exif \
+        pcntl \
+        soap \
+    && docker-php-ext-enable opcache
+
+RUN echo "zend.exception_ignore_args = On" >> /usr/local/etc/php/php.ini
+RUN echo "display_errors = Off" >> /usr/local/etc/php/php.ini \
+    && echo "log_errors = On" >> /usr/local/etc/php/php.ini \
+    && echo "memory_limit = 512M" >> /usr/local/etc/php/php.ini \
+    && echo "max_execution_time = 300" >> /usr/local/etc/php/php.ini
+
+RUN echo "max_input_vars = 5000" >> /usr/local/etc/php/php.ini
 
 # Xdebug (optional)
 RUN pecl install xdebug \
